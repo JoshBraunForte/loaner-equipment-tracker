@@ -1,0 +1,40 @@
+@page
+@model LoanTracker.Pages.Equipment.IndexModel
+@{
+    ViewData["Title"] = "Inventory";
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="h3">Equipment inventory</h1>
+    <a class="btn btn-primary" asp-page="/Equipment/Upsert">+ Add equipment</a>
+</div>
+
+<table class="table table-hover mt-3">
+    <thead><tr><th>Asset tag</th><th>Name</th><th>Category</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var e in Model.Items)
+    {
+        <tr>
+            <td>@e.AssetTag</td>
+            <td>@e.Name</td>
+            <td>@e.Category</td>
+            <td>
+                @switch (e.Status)
+                {
+                    case EquipmentStatus.Available:
+                        <span class="badge bg-success">Available</span>
+                        break;
+                    case EquipmentStatus.OnLoan:
+                        <span class="badge bg-primary">On loan</span>
+                        break;
+                    default:
+                        <span class="badge bg-secondary">Retired</span>
+                        break;
+                }
+            </td>
+            <td class="small text-muted">@e.Notes</td>
+            <td class="text-end"><a class="btn btn-sm btn-outline-secondary" asp-page="/Equipment/Upsert" asp-route-id="@e.Id">Edit</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

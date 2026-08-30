@@ -1,0 +1,36 @@
+@page
+@model LoanTracker.Pages.Requests.CreateModel
+@{
+    ViewData["Title"] = "New Request";
+}
+
+<h1 class="h3">New equipment request</h1>
+
+@if (Model.HasManager)
+{
+    <p class="text-muted">This request will be sent to <strong>@Model.ManagerName</strong> for approval.</p>
+}
+else
+{
+    <div class="alert alert-warning">You have no manager on file, so there is no approver for this request in the test data.</div>
+}
+
+<div class="col-md-6">
+    <form method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="mb-3">
+            <label class="form-label">What do you need? *</label>
+            <input asp-for="ItemDescription" class="form-control" placeholder="e.g., Laptop for travel" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <input asp-for="Category" class="form-control" placeholder="e.g., Laptop, Monitor, Headset" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Justification</label>
+            <textarea asp-for="Justification" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit request</button>
+        <a class="btn btn-link" asp-page="/Requests/Index">Cancel</a>
+    </form>
+</div>

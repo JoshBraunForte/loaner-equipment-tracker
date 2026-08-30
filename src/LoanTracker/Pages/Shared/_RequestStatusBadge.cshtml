@@ -1,0 +1,13 @@
+@model LoanTracker.Models.RequestStatus
+@{
+    var (css, text) = Model switch
+    {
+        RequestStatus.Submitted => ("bg-warning text-dark", "Awaiting manager"),
+        RequestStatus.Approved => ("bg-info text-dark", "Approved — with IT"),
+        RequestStatus.Denied => ("bg-danger", "Denied"),
+        RequestStatus.Fulfilled => ("bg-success", "Fulfilled"),
+        RequestStatus.Cancelled => ("bg-secondary", "Cancelled"),
+        _ => ("bg-secondary", Model.ToString())
+    };
+}
+<span class="badge @css">@text</span>

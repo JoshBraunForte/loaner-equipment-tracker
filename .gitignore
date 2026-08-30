@@ -1,0 +1,22 @@
+# Build output
+bin/
+obj/
+
+# SQLite database files (created/seeded at runtime)
+*.db
+*.db-shm
+*.db-wal
+
+# User-specific / IDE
+.vs/
+*.user
+*.suo
+
+# Python / misc (pre-existing)
+__pycache__/
+.env
+*.log
+
+# OS
+Thumbs.db
+.DS_Store

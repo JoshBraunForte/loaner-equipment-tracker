@@ -1,0 +1,56 @@
+@page
+@model LoanTracker.Pages.Audit.IndexModel
+@{
+    ViewData["Title"] = "Audit Report";
+}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="h3">Who has what — audit report</h1>
+    <button class="btn btn-outline-secondary btn-sm" onclick="window.print()">Print</button>
+</div>
+<p class="text-muted">Generated @Model.GeneratedAt.ToString("yyyy-MM-dd HH:mm") ·
+    @Model.OnLoan.Count item(s) on loan (@Model.OverdueCount overdue) · @Model.Available.Count available.</p>
+
+<h2 class="h5 mt-4">Currently on loan</h2>
+@if (Model.OnLoan.Any())
+{
+    <table class="table table-sm table-bordered">
+        <thead class="table-light"><tr><th>Holder</th><th>Asset tag</th><th>Item</th><th>Category</th><th>Checked out</th><th>Due</th><th>Overdue?</th></tr></thead>
+        <tbody>
+        @foreach (var l in Model.OnLoan)
+        {
+            <tr>
+                <td>@l.Borrower.DisplayName</td>
+                <td>@l.Equipment.AssetTag</td>
+                <td>@l.Equipment.Name</td>
+                <td>@l.Equipment.Category</td>
+                <td>@l.CheckedOutAt.ToString("yyyy-MM-dd")</td>
+                <td>@l.DueDate.ToString("yyyy-MM-dd")</td>
+                <td>@(l.IsOverdue ? "YES" : "")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">No equipment is currently on loan.</p>
+}
+
+<h2 class="h5 mt-4">Available equipment</h2>
+@if (Model.Available.Any())
+{
+    <table class="table table-sm table-bordered">
+        <thead class="table-light"><tr><th>Asset tag</th><th>Item</th><th>Category</th></tr></thead>
+        <tbody>
+        @foreach (var e in Model.Available)
+        {
+            <tr><td>@e.AssetTag</td><td>@e.Name</td><td>@e.Category</td></tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">No equipment is currently available.</p>
+}

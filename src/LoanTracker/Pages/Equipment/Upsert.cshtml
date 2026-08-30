@@ -1,0 +1,36 @@
+@page
+@model LoanTracker.Pages.Equipment.UpsertModel
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit equipment" : "Add equipment";
+}
+
+<h1 class="h3">@ViewData["Title"]</h1>
+
+<div class="col-md-6">
+    <form method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="mb-3">
+            <label class="form-label">Asset tag *</label>
+            <input asp-for="AssetTag" class="form-control" placeholder="e.g., LT-004" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Name *</label>
+            <input asp-for="Name" class="form-control" placeholder="e.g., Dell Latitude 7440" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <input asp-for="Category" class="form-control" placeholder="e.g., Laptop" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select asp-for="Status" asp-items="Html.GetEnumSelectList<LoanTracker.Models.EquipmentStatus>()" class="form-select"></select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a class="btn btn-link" asp-page="/Equipment/Index">Cancel</a>
+    </form>
+</div>

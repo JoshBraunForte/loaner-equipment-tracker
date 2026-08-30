@@ -1,0 +1,144 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1 class="h3 mb-1">Welcome, @Model.DisplayName</h1>
+<p class="text-muted">Role: <span class="badge bg-secondary">@Model.Role</span></p>
+
+@* ---------------- IT STAFF ---------------- *@
+@if (Model.Role == UserRole.ItStaff)
+{
+    <div class="row g-3 my-2">
+        <div class="col-md-3"><div class="card text-bg-warning"><div class="card-body"><h2 class="h5">Awaiting fulfillment</h2><p class="display-6 mb-0">@Model.QueueCount</p><a class="stretched-link" asp-page="/Queue/Index"></a></div></div></div>
+        <div class="col-md-3"><div class="card text-bg-primary"><div class="card-body"><h2 class="h5">Active loans</h2><p class="display-6 mb-0">@Model.ActiveLoans</p><a class="stretched-link" asp-page="/Loans/Index"></a></div></div></div>
+        <div class="col-md-3"><div class="card text-bg-danger"><div class="card-body"><h2 class="h5">Overdue</h2><p class="display-6 mb-0">@Model.OverdueCount</p><a class="stretched-link" asp-page="/Loans/Index"></a></div></div></div>
+        <div class="col-md-3"><div class="card text-bg-success"><div class="card-body"><h2 class="h5">Available</h2><p class="display-6 mb-0">@Model.AvailableCount</p><a class="stretched-link" asp-page="/Equipment/Index"></a></div></div></div>
+    </div>
+
+    <h2 class="h5 mt-4">Overdue items</h2>
+    @if (Model.OverdueLoans.Any())
+    {
+        <table class="table table-sm table-hover">
+            <thead><tr><th>Asset</th><th>Item</th><th>Holder</th><th>Due</th><th>Days late</th></tr></thead>
+            <tbody>
+            @foreach (var l in Model.OverdueLoans)
+            {
+                <tr class="table-danger">
+                    <td>@l.Equipment.AssetTag</td>
+                    <td>@l.Equipment.Name</td>
+                    <td>@l.Borrower.DisplayName</td>
+                    <td>@l.DueDate.ToString("yyyy-MM-dd")</td>
+                    <td>@((DateTime.Today - l.DueDate.Date).Days)</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">Nothing overdue. 🎉</p>
+    }
+}
+
+@* ---------------- MANAGER ---------------- *@
+@if (Model.Role == UserRole.Manager)
+{
+    <div class="alert @(Model.PendingApprovals > 0 ? "alert-warning" : "alert-secondary")">
+        You have <strong>@Model.PendingApprovals</strong> request(s) awaiting your approval.
+        <a asp-page="/Approvals/Index" class="alert-link">Review approvals →</a>
+    </div>
+
+    <h2 class="h5 mt-4">What your team currently has</h2>
+    @if (Model.TeamLoans.Any())
+    {
+        <table class="table table-sm table-hover">
+            <thead><tr><th>Employee</th><th>Asset</th><th>Item</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var l in Model.TeamLoans)
+            {
+                <tr>
+                    <td>@l.Borrower.DisplayName</td>
+                    <td>@l.Equipment.AssetTag</td>
+                    <td>@l.Equipment.Name</td>
+                    <td>@l.DueDate.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        @if (l.IsOverdue)
+                        {
+                            <span class="badge bg-danger">Overdue</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">On time</span>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">None of your employees currently have loaner equipment.</p>
+    }
+}
+
+@* ---------------- EVERYONE: my equipment & my requests ---------------- *@
+<h2 class="h5 mt-4">Equipment I currently have</h2>
+@if (Model.MyLoans.Any())
+{
+    <table class="table table-sm table-hover">
+        <thead><tr><th>Asset</th><th>Item</th><th>Checked out</th><th>Due</th><th>Status</th></tr></thead>
+        <tbody>
+        @foreach (var l in Model.MyLoans)
+        {
+            <tr>
+                <td>@l.Equipment.AssetTag</td>
+                <td>@l.Equipment.Name</td>
+                <td>@l.CheckedOutAt.ToString("yyyy-MM-dd")</td>
+                <td>@l.DueDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    @if (l.IsOverdue)
+                    {
+                        <span class="badge bg-danger">Overdue</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">On time</span>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">You don't currently have any loaner equipment.</p>
+}
+
+<div class="d-flex align-items-center mt-4">
+    <h2 class="h5 mb-0 me-3">My recent requests</h2>
+    <a class="btn btn-sm btn-primary" asp-page="/Requests/Create">+ New request</a>
+</div>
+@if (Model.MyRequests.Any())
+{
+    <table class="table table-sm mt-2">
+        <thead><tr><th>Item</th><th>Requested</th><th>Status</th></tr></thead>
+        <tbody>
+        @foreach (var r in Model.MyRequests)
+        {
+            <tr>
+                <td>@r.ItemDescription</td>
+                <td>@r.CreatedAt.ToString("yyyy-MM-dd")</td>
+                <td><partial name="_RequestStatusBadge" model="r.Status" /></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted mt-2">You haven't made any requests yet.</p>
+}
